@@ -39,7 +39,11 @@ echo "-----> Installing Gemfile.rails6 gems"
 cd $BUILD_DIR
 bundle_without="development"
 set -o pipefail # Enable pipefail so failure exit code from bundle install will not be lost by pipe to indent.
-BUNDLE_GEMFILE=Gemfile.rails6 bundle install --without $bundle_without --path vendor/bundle --binstubs vendor/bundle/bin -j4 --deployment | indent
+BUNDLE_GEMFILE=Gemfile.rails6 bundle config set --local deployment 'true'
+BUNDLE_GEMFILE=Gemfile.rails6 bundle config set --local path 'vendor/bundle'
+BUNDLE_GEMFILE=Gemfile.rails6 bundle config set --local without $bundle_without
+BUNDLE_GEMFILE=Gemfile.rails6 bundle binstubs --all
+BUNDLE_GEMFILE=Gemfile.rails6 bundle install -j4 | indent
 bundle_install_status=$?
 set +o pipefail # Disable pipefail, only needed for above command as it is pipes to indent.
 
