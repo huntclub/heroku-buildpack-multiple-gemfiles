@@ -33,22 +33,22 @@ function indent() {
 
 
 # The heroku ruby buildpack will have already installed the gems for the default Gemfile, so now
-# install the missing gems from Gemfile.rails6. We want gem versions from both Gemfiles to be in the
+# install the missing gems from Gemfile.next. We want gem versions from both Gemfiles to be in the
 # app for parity with the production slug.
-echo "-----> Installing Gemfile.rails6 gems"
+echo "-----> Installing Gemfile.next gems"
 cd $BUILD_DIR
 bundle_without="development"
 set -o pipefail # Enable pipefail so failure exit code from bundle install will not be lost by pipe to indent.
-BUNDLE_GEMFILE=Gemfile.rails6 bundle config set --local deployment 'true'
-BUNDLE_GEMFILE=Gemfile.rails6 bundle config set --local path 'vendor/bundle'
-BUNDLE_GEMFILE=Gemfile.rails6 bundle config set --local without $bundle_without
-BUNDLE_GEMFILE=Gemfile.rails6 bundle binstubs --all
-BUNDLE_GEMFILE=Gemfile.rails6 bundle install -j4 | indent
+BUNDLE_GEMFILE=Gemfile.next bundle config set --local deployment 'true'
+BUNDLE_GEMFILE=Gemfile.next bundle config set --local path 'vendor/bundle'
+BUNDLE_GEMFILE=Gemfile.next bundle config set --local without $bundle_without
+BUNDLE_GEMFILE=Gemfile.next bundle binstubs --all
+BUNDLE_GEMFILE=Gemfile.next bundle install -j4 | indent
 bundle_install_status=$?
 set +o pipefail # Disable pipefail, only needed for above command as it is pipes to indent.
 
 if [ $bundle_install_status -ne 0 ]; then
-  error "bundle install error: This can happen when Gemfile.rails6.lock falls out of sync with Gemfile.rails6. Check the committed Gemfile.rails6.lock is up-to-date."
+  error "bundle install error: This can happen when Gemfile.next.lock falls out of sync with Gemfile.next. Check the committed Gemfile.next.lock is up-to-date."
 fi
 
 echo "-----> Writing .profile.d/multiple-gemfiles.sh to run on dyno startup"
@@ -63,7 +63,7 @@ echo "---------------------> Unsetting BUNDLE_GEMFILE"
 unset BUNDLE_GEMFILE
 
 # DEPENDENCIES_NEXT_CI_NODES is a comma-separated string of CI node indexes that should use
-# Gemfile.rails6 (glob wildcards can be used though you probably don't want to do this in CI):
+# Gemfile.next (glob wildcards can be used though you probably don't want to do this in CI):
 #
 # e.g. DEPENDENCIES_NEXT_CI_NODES=5,6,7
 next_server_ids=$DEPENDENCIES_NEXT_CI_NODES
@@ -76,7 +76,7 @@ function is_next_server() {
   for next_server in "${next_servers[@]}"; do
     # This supports glob matching (*)
     if [[ "$server_id" == $next_server ]]; then
-      # matches => this server will use Gemfile.rails6.
+      # matches => this server will use Gemfile.next.
       true
       return
     fi
@@ -91,8 +91,8 @@ if [ -n "$next_server_ids" ]; then
   if is_next_server; then
     echo "---------------------> Setting DEPENDENCIES_NEXT=true"
     export DEPENDENCIES_NEXT=true
-    echo "---------------------> Setting BUNDLE_GEMFILE=$HOME/Gemfile.rails6"
-    export BUNDLE_GEMFILE=$HOME/Gemfile.rails6
+    echo "---------------------> Setting BUNDLE_GEMFILE=$HOME/Gemfile.next"
+    export BUNDLE_GEMFILE=$HOME/Gemfile.next
   fi
 fi
 
