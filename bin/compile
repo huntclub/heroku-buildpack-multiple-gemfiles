@@ -38,8 +38,8 @@ cd $BUILD_DIR
 bundle_without="development:test"
 set -o pipefail # Enable pipefail so failure exit code from bundle install will not be lost by pipe to indent.
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo $BUNDLE_GEMS__GRAPHQL__PRO
-echo $BUNDLE_RUBYGEMS__PKG__GITHUB__COM
+cat "$ENV_DIR/BUNDLE_GEMS__GRAPHQL__PRO"
+cat "$ENV_DIR/BUNDLE_RUBYGEMS__PKG__GITHUB__COM"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 BUNDLE_GEMFILE=Gemfile.next bundle config set --local deployment 'true'
 BUNDLE_GEMFILE=Gemfile.next bundle config set --local path 'vendor/bundle'
